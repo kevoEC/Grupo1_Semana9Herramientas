@@ -36,7 +36,7 @@ jobs:
       - run:
           name: Crear script de envío de correo
           command: |
-            cat <<EOF > send_email.py
+            cat \<<EOF > send_email.py
             import smtplib
             from email.message import EmailMessage
             import os
