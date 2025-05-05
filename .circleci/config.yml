@@ -36,13 +36,27 @@ jobs:
       - email/notify:
           to: $GMAIL_USER
           from: $GMAIL_USER
-          subject: "Pipeline Java – << pipeline.number >> – << pipeline.status >>"
+          smtp-server: smtp.gmail.com
+          smtp-port: 587
+          smtp-username: $SMTP_USERNAME
+          smtp-password: $SMTP_PASSWORD
+          subject: "📬 CircleCI | Resultado del pipeline #<< pipeline.number >> – << pipeline.status >>"
           body: |
-            Proyecto: << pipeline.project.slug >>
-            Rama: << pipeline.vcs.branch >>
-            Commit: << pipeline.vcs.revision >>
-            Estado: << pipeline.status >>
-            Pipeline URL: << pipeline.web_url >>
+            ¡Hola!
+
+            Te notificamos que el pipeline ejecutado en CircleCI ha finalizado.
+
+            🧾 Proyecto: << pipeline.project.slug >>
+            🔁 Rama: << pipeline.vcs.branch >>
+            🔢 Commit: << pipeline.vcs.revision >>
+            📈 Estado: << pipeline.status >>
+
+            📎 Puedes consultar todos los detalles en el siguiente enlace:
+            🔗 << pipeline.web_url >>
+
+            --
+            Este correo fue generado automáticamente por CircleCI.
+            Si no deseas recibir estas notificaciones, ajusta la configuración del pipeline.
 
 workflows:
   version: 2
