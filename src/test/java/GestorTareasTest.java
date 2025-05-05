@@ -1,37 +1,38 @@
-import static org.junit.jupiter.api.Assertions.*;
-
-import javax.swing.plaf.metal.MetalBorders.TableHeaderBorder;
-
 import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class GestorTareasTest {
 
   @Test
-  public void testAgregarTarea() {
-
+  public void testAgregarTareaValida() {
     GestorTareas gestor = new GestorTareas();
-
-    Tarea tarea1 = new Tarea();
-    Tarea tarea2 = new Tarea();
-
-    tarea1.setTitulo("Tarea uno 1");
-    tarea2.setTitulo("Tarea uno 2");
-
-    gestor.agregarTarea(tarea1);
-    gestor.agregarTarea(tarea2);
-
-    assertEquals(2, gestor.obtenerTotalTareas(), "Deberia tener 2 tarea");
-
+    Tarea tarea = new Tarea("Comprar pan", "Ir a la panadería antes de las 10");
+    gestor.agregarTarea(tarea);
+    assertEquals(1, gestor.obtenerTotalTareas());
   }
 
-  // @Test
-  public void testTituloTarea() {
-
-    Tarea tarea = new Tarea();
+  @Test
+  public void testEliminarTareaValida() {
     GestorTareas gestor = new GestorTareas();
+    gestor.agregarTarea(new Tarea("A", "B"));
+    gestor.eliminarTarea(0);
+    assertEquals(0, gestor.obtenerTotalTareas());
+  }
 
-    tarea.setTitulo("Titulo de la tarea");
+  @Test
+  public void testEliminarTareaInvalidaLanzaExcepcion() {
+    GestorTareas gestor = new GestorTareas();
+    Exception exception = assertThrows(IndexOutOfBoundsException.class, () -> {
+      gestor.eliminarTarea(5);
+    });
+    assertTrue(exception.getMessage().contains("fuera de rango"));
+  }
 
-    assertEquals("Titulo de la tarea", tarea.getTitulo(), "El titulo de la tarea debe ser Titulo de la tarea");
+  @Test
+  public void testLimpiarTareas() {
+    GestorTareas gestor = new GestorTareas();
+    gestor.agregarTarea(new Tarea("A", "B"));
+    gestor.limpiarTareas();
+    assertEquals(0, gestor.obtenerTotalTareas());
   }
 }

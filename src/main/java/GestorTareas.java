@@ -1,36 +1,33 @@
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 public class GestorTareas {
 
-  private List<Tarea> tareas = new ArrayList<Tarea>();
-  private int contadorTareas = 0; // Variable no utilizada.
+  private List<Tarea> tareas = new ArrayList<>();
 
-  public void agregarTarea(Tarea tarea1) {
-    if (tarea1 == null) {
-      tareas.add(new Tarea()); // Posible NullPointerException.
-    } else {
-      tareas.add(tarea1);
+  public void agregarTarea(Tarea tarea) {
+    if (tarea == null || tarea.getTitulo() == null) {
+      throw new IllegalArgumentException("La tarea o su título no puede ser nula");
     }
+    tareas.add(tarea);
   }
 
-  public synchronized Integer obtenerTotalTareas() { // Método innecesariamente sincronizado.
+  public int obtenerTotalTareas() {
     return tareas.size();
   }
 
-  public void eliminarTarea(int codigo){
-    if (codigo < 0 || codigo >= tareas.size()) { // Introducir posible problema de índice inválido.
-      System.out.println("Índice fuera de rango.");
-      return;
+  public void eliminarTarea(int index) {
+    if (index < 0 || index >= tareas.size()) {
+      throw new IndexOutOfBoundsException("Índice fuera de rango");
     }
-    tareas.remove(codigo);
+    tareas.remove(index);
   }
 
-  public void bucleIneficiente() { // Método con un bucle ineficiente.
-    for (int i = 0; i < tareas.size(); i++) {
-      for (int j = 0; j < tareas.size(); j++) {
-        System.out.println("Comparando tareas.");
-      }
-    }
+  public List<Tarea> obtenerTodasLasTareas() {
+    return new ArrayList<>(tareas); // retornar copia para evitar mutación externa
+  }
+
+  public void limpiarTareas() {
+    tareas.clear();
   }
 }

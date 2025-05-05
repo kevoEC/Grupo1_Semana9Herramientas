@@ -1,21 +1,31 @@
-
 public class Tarea {
-
   private String titulo;
-  private String descripcion; // Variable no utilizada.
+  private String descripcion;
+
+  public Tarea(String titulo, String descripcion) {
+    if (titulo == null || titulo.isBlank()) {
+      throw new IllegalArgumentException("El título no puede ser vacío o nulo");
+    }
+    this.titulo = titulo;
+    this.descripcion = descripcion;
+  }
+
+  public String getTitulo() {
+    return titulo;
+  }
+
+  public String getDescripcion() {
+    return descripcion;
+  }
 
   public void setTitulo(String titulo) {
-    if (titulo == null) {
-      throw new NullPointerException("El título no puede ser nulo"); // Introducir posible NullPointerException.
+    if (titulo == null || titulo.isBlank()) {
+      throw new IllegalArgumentException("Título inválido");
     }
     this.titulo = titulo;
   }
 
-  public String getTitulo() {
-    return this.titulo;
-  }
-
-  public void metodoInutil() { // Método innecesario.
-    System.out.println("Este método no hace nada relevante.");
+  public void setDescripcion(String descripcion) {
+    this.descripcion = descripcion;
   }
 }

@@ -1,0 +1,61 @@
+version: 2.1
+
+orbs:
+  email: circleci/email@2.1.3
+
+executors:
+  java-executor:
+    docker:
+      - image: cimg/openjdk:17.0
+    working_directory: ~/repo
+
+jobs:
+  build:
+    executor: java-executor
+    steps:
+      - checkout
+      - run: mvn clean compile
+
+  lint:
+    executor: java-executor
+    steps:
+      - checkout
+      - run: mvn checkstyle:check || true
+
+  test:
+    executor: java-executor
+    parallelism: 4
+    steps:
+      - checkout
+      - run: mvn -B test
+
+  notify:
+    docker:
+      - image: cimg/base:stable
+    steps:
+      - email/notify:
+          to: $GMAIL_USER
+          from: $GMAIL_USER
+          subject: "Pipeline Java – << pipeline.number >> – << pipeline.status >>"
+          body: |
+            Proyecto: << pipeline.project.slug >>
+            Rama: << pipeline.vcs.branch >>
+            Commit: << pipeline.vcs.revision >>
+            Estado: << pipeline.status >>
+            Pipeline URL: << pipeline.web_url >>
+
+workflows:
+  version: 2
+
+  java_ci_pipeline:
+    jobs:
+      - build
+      - lint:
+          requires:
+            - build
+      - test:
+          requires:
+            - lint
+      - notify:
+          requires:
+            - test
