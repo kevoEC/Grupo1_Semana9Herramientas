@@ -1,8 +1,5 @@
 version: 2.1
 
-orbs:
-  email: circleci/email@2.1.3
-
 executors:
   java-executor:
     docker:
@@ -31,32 +28,33 @@ jobs:
 
   notify:
     docker:
-      - image: cimg/base:stable
+      - image: cimg/python:3.10
     steps:
-      - email/notify:
-          to: $GMAIL_USER
-          from: $GMAIL_USER
-          smtp-server: smtp.gmail.com
-          smtp-port: 587
-          smtp-username: $SMTP_USERNAME
-          smtp-password: $SMTP_PASSWORD
-          subject: "📬 CircleCI | Resultado del pipeline #<< pipeline.number >> – << pipeline.status >>"
-          body: |
-            ¡Hola!
+      - run:
+          name: Instalar dependencias
+          command: pip install secure-smtplib
+      - run:
+          name: Crear script de envío de correo
+          command: |
+            cat <<EOF > send_email.py
+            import smtplib
+            from email.message import EmailMessage
+            import os
 
-            Te notificamos que el pipeline ejecutado en CircleCI ha finalizado.
+            msg = EmailMessage()
+            msg.set_content("El pipeline de CircleCI ha finalizado correctamente.")
+            msg["Subject"] = "Notificación: Pipeline terminado"
+            msg["From"] = os.environ["SMTP_USER"]
+            msg["To"] = os.environ["SMTP_USER"]
 
-            🧾 Proyecto: << pipeline.project.slug >>
-            🔁 Rama: << pipeline.vcs.branch >>
-            🔢 Commit: << pipeline.vcs.revision >>
-            📈 Estado: << pipeline.status >>
-
-            📎 Puedes consultar todos los detalles en el siguiente enlace:
-            🔗 << pipeline.web_url >>
-
-            --
-            Este correo fue generado automáticamente por CircleCI.
-            Si no deseas recibir estas notificaciones, ajusta la configuración del pipeline.
+            with smtplib.SMTP(os.environ["SMTP_HOST"], int(os.environ["SMTP_PORT"])) as server:
+                server.starttls()
+                server.login(os.environ["SMTP_USER"], os.environ["SMTP_PASSWORD"])
+                server.send_message(msg)
+            EOF
+      - run:
+          name: Enviar correo de notificación
+          command: python send_email.py
 
 workflows:
   version: 2
