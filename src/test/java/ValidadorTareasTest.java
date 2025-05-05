@@ -12,7 +12,12 @@ public class ValidadorTareasTest {
 
     @Test
     public void testValidarTareaInvalida() {
-        assertFalse(ValidadorTareas.validarTarea(new Tarea("", "Desc")));
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            new Tarea("", "Desc"); // Espera que esto falle
+        });
+        assertTrue(exception.getMessage().contains("título no puede ser vacío"));
+
+        // También puedes testear con null
         assertFalse(ValidadorTareas.validarTarea(null));
     }
 
